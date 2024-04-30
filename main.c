@@ -18,6 +18,9 @@ void setup(void);
 
 // globale Variablen
 // hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
+int ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
+int writeIndex = 0;
+int readIndex = 0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -61,7 +64,9 @@ void adcIntHandler (void){
    uint32_t adcInputValue;
    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
    // Bitte Code hier einfuegen
-   // ...
+
+
+
 
    // am Ende von adcIntHandler, Interrupt-Flag loeschen
    ADCIntClear(ADC0_BASE,3);
