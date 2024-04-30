@@ -59,7 +59,33 @@ void setup(void){// konfiguriert den MiKrocontroller
     ADCIntEnable(ADC0_BASE,3);
 
 }
+// Funktionen aus Wikipedia
+int put (int item)  //Funktion setzt einen neuen Wert in den Buffer
+{
+  if ((writeIndex + 1) % BUFFER_SIZE == readIndex)
+  {
+     // buffer is full, avoid overflow
+     return 0;
+  }
+  ringBuffer[writeIndex] = item;
+  writeIndex = (writeIndex + 1) % BUFFER_SIZE;
+  return 1;
+}
 
+
+int get (int * value)   //Funktion holt den nächsten Wert aus dem Buffer
+{
+  if (readIndex == writeIndex)
+  {
+     // buffer is empty
+     return 0;
+  }
+
+  *value = ringBuffer[readIndex];
+  readIndex = (readIndex + 1) % BUFFER_SIZE;
+  return 1;
+}
+// Ende Funktionen aus Wikipedia
 void adcIntHandler (void){
    uint32_t adcInputValue;
    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
