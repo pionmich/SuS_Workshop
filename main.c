@@ -22,6 +22,8 @@ uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
+uint8_t HIGH = 0xFF;    // LED an
+uint8_t LOW = 0;        // LED aus
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -92,7 +94,7 @@ void adcIntHandler (void){
    // Bitte Code hier einfuegen
     uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
     put (currentValue);
-    float average = 0;
+    float average = 0.0;
     for (i = 0; i <= BUFFER_SIZE; i++)
     {
 
