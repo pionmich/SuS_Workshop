@@ -63,10 +63,10 @@ void setup(void){// konfiguriert den MiKrocontroller
 // Funktionen aus Wikipedia
 void put (int item)  //Funktion setzt einen neuen Wert in den Buffer
 {
-  if ((writeIndex + 1) % BUFFER_SIZE == readIndex)
-  {
-     // buffer is full, #ERROR
-  }
+//  if ((writeIndex + 1) % BUFFER_SIZE == readIndex)
+//  {
+//     // buffer is full, #ERROR
+//  }
   ringBuffer[writeIndex] = item;
   writeIndex = (writeIndex + 1) % BUFFER_SIZE;
 
@@ -75,11 +75,11 @@ void put (int item)  //Funktion setzt einen neuen Wert in den Buffer
 
 int get ()   //Funktion holt den naechsten Wert aus dem Buffer
 {
-  if (readIndex == writeIndex)
-  {
-     // buffer is empty #ERROR
-     return 0;
-  }
+//  if (readIndex == writeIndex)
+//  {
+//     // buffer is empty #ERROR
+//     return 0;
+//  }
 
   int item = ringBuffer[readIndex];
   readIndex = (readIndex + 1) % BUFFER_SIZE;
@@ -92,12 +92,12 @@ void adcIntHandler (void){
    // Bitte Code hier einfuegen
     int currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
     put (currentValue);
-    int average = 0;
+    float average = 0;
     for (i = 0; i <= BUFFER_SIZE; i++)
     {
 
         int value = get();
-        average = (average + value)/BUFFER_SIZE;
+        average = ((average + value)/ BUFFER_SIZE);
     }
 
 
