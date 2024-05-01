@@ -16,14 +16,19 @@
 void adcIntHandler(void);
 void setup(void);
 
+// Konstanten
+const uint8_t HIGH = 0xFF;    // LED an
+const uint8_t LOW = 0;        // LED aus
+const uint32_t VALUE_MAX = 16777216; // 4096 squared = 16777216, 4096 because adc has 12 bits
+
 // globale Variablen
 // hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
 uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
-uint8_t HIGH = 0xFF;    // LED an
-uint8_t LOW = 0;        // LED aus
+float averageMax = VALUE_MAX / BUFFER_SIZE;
+
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
