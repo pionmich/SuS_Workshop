@@ -27,9 +27,9 @@ uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
-#define  AVERAGE_MAX VALUE_MAX / BUFFER_SIZE;
-#define AVERAGE_POT_MAX 10^ (AVERAGE_MAX);  // maximaler Grenzwert der Skala
-#define AVERAGE_POT(threshold_value) 10^ ((threshold_value * AVERAGE_MAX)/8);   /Maximaler Grenzwert der Skala in Achteln
+#define AVERAGE_MAX VALUE_MAX / BUFFER_SIZE
+#define AVERAGE_POT_MAX (10^ (AVERAGE_MAX))  // maximaler Grenzwert der Skala
+#define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/8))   //Maximaler Grenzwert der Skala in Achteln
 
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
@@ -108,7 +108,13 @@ void adcIntHandler (void){
         uint32_t value = get();
         average = ((average + value)/ BUFFER_SIZE);
     }
-
+    if ((average >= (AVERAGE_POT(0)) )&&(average <= AVERAGE_POT(1)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+        {
+        GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+        GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+        GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+        GPIO_PIN_7) , LOW ) ;
+        }
 
 
    // am Ende von adcIntHandler, Interrupt-Flag loeschen
