@@ -27,16 +27,18 @@ uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
-float averageMax = VALUE_MAX / BUFFER_SIZE;
+#define  AVERAGE_MAX VALUE_MAX / BUFFER_SIZE;
+#define AVERAGE_POT_MAX 10^ (AVERAGE_MAX);  // maximaler Grenzwert der Skala
+#define AVERAGE_POT(threshold_value) 10^ ((threshold_value * AVERAGE_MAX)/8);   /Maximaler Grenzwert der Skala in Achteln
 
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
+
     while(1){}
 }
 
 void setup(void){// konfiguriert den MiKrocontroller
-
     // konfiguriere System-Clock
     SysCtlClockSet(SYSCTL_SYSDIV_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
     uint32_t period = SysCtlClockGet()/SAMPLERATE;
