@@ -21,6 +21,7 @@ void setup(void);
 int ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 int writeIndex = 0;
 int readIndex = 0;
+int i = 0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -60,30 +61,29 @@ void setup(void){// konfiguriert den MiKrocontroller
 
 }
 // Funktionen aus Wikipedia
-int put (int item)  //Funktion setzt einen neuen Wert in den Buffer
+void put (int item)  //Funktion setzt einen neuen Wert in den Buffer
 {
   if ((writeIndex + 1) % BUFFER_SIZE == readIndex)
   {
-     // buffer is full, avoid overflow
-     return 0;
+     // buffer is full, #ERROR
   }
   ringBuffer[writeIndex] = item;
   writeIndex = (writeIndex + 1) % BUFFER_SIZE;
-  return 1;
+
 }
 
 
-int get (int * value)   //Funktion holt den nächsten Wert aus dem Buffer
+int get ()   //Funktion holt den naechsten Wert aus dem Buffer
 {
   if (readIndex == writeIndex)
   {
-     // buffer is empty
+     // buffer is empty #ERROR
      return 0;
   }
 
-  *value = ringBuffer[readIndex];
+  int item = ringBuffer[readIndex];
   readIndex = (readIndex + 1) % BUFFER_SIZE;
-  return 1;
+  return item;
 }
 // Ende Funktionen aus Wikipedia
 void adcIntHandler (void){
@@ -91,6 +91,14 @@ void adcIntHandler (void){
    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
    // Bitte Code hier einfuegen
     int currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
+    put (currentValue);
+    int average = 0;
+    for (i = 0; i <= BUFFER_SIZE; i++)
+    {
+
+        int value = get();
+        average = (average + value)/BUFFER_SIZE;
+    }
 
 
 
