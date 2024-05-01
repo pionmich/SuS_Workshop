@@ -17,7 +17,7 @@ void adcIntHandler(void);
 void setup(void);
 
 // globale Variablen
-// hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
+// hier die benÃ¶tigten globalen Variablen, wie den Ringbuffer einfuegen
 int ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 int writeIndex = 0;
 int readIndex = 0;
@@ -73,7 +73,7 @@ int put (int item)  //Funktion setzt einen neuen Wert in den Buffer
 }
 
 
-int get (int * value)   //Funktion holt den nächsten Wert aus dem Buffer
+int get (int * value)   //Funktion holt den nÃ¤chsten Wert aus dem Buffer
 {
   if (readIndex == writeIndex)
   {
@@ -90,7 +90,7 @@ void adcIntHandler (void){
    uint32_t adcInputValue;
    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
    // Bitte Code hier einfuegen
-
+    int currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
 
 
 
