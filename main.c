@@ -18,10 +18,10 @@ void setup(void);
 
 // globale Variablen
 // hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
-int ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
-int writeIndex = 0;
-int readIndex = 0;
-int i = 0;
+uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
+uint32_t writeIndex = 0;
+uint32_t readIndex = 0;
+uint32_t i = 0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -61,7 +61,7 @@ void setup(void){// konfiguriert den MiKrocontroller
 
 }
 // Funktionen aus Wikipedia
-void put (int item)  //Funktion setzt einen neuen Wert in den Buffer
+void put (uint32_t item)  //Funktion setzt einen neuen Wert in den Buffer
 {
 //  if ((writeIndex + 1) % BUFFER_SIZE == readIndex)
 //  {
@@ -73,7 +73,7 @@ void put (int item)  //Funktion setzt einen neuen Wert in den Buffer
 }
 
 
-int get ()   //Funktion holt den naechsten Wert aus dem Buffer
+uint32_t get ()   //Funktion holt den naechsten Wert aus dem Buffer
 {
 //  if (readIndex == writeIndex)
 //  {
@@ -81,7 +81,7 @@ int get ()   //Funktion holt den naechsten Wert aus dem Buffer
 //     return 0;
 //  }
 
-  int item = ringBuffer[readIndex];
+  uint32_t item = ringBuffer[readIndex];
   readIndex = (readIndex + 1) % BUFFER_SIZE;
   return item;
 }
@@ -90,13 +90,13 @@ void adcIntHandler (void){
    uint32_t adcInputValue;
    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
    // Bitte Code hier einfuegen
-    int currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
+    uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
     put (currentValue);
     float average = 0;
     for (i = 0; i <= BUFFER_SIZE; i++)
     {
 
-        int value = get();
+        uint32_t value = get();
         average = ((average + value)/ BUFFER_SIZE);
     }
 
