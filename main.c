@@ -29,7 +29,7 @@ uint32_t readIndex = 0;
 uint32_t i = 0;
 #define AVERAGE_MAX VALUE_MAX / BUFFER_SIZE
 #define AVERAGE_POT_MAX (10^ (AVERAGE_MAX))  // maximaler Grenzwert der Skala
-#define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/8))   //Maximaler Grenzwert der Skala in Achteln
+#define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/9))   //Maximaler Grenzwert der Skala in Neunteln
 
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
@@ -108,7 +108,16 @@ void adcIntHandler (void){
         uint32_t value = get();
         average = ((average + value)/ BUFFER_SIZE);
     }
-    if ((average >= (AVERAGE_POT(0)) )&&(average < AVERAGE_POT(1)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+
+//    average = AVERAGE_POT_MAX;
+    if ((average >= (0) )&&(average < AVERAGE_POT(1)) )
+    {
+        GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                        GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                        GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                        GPIO_PIN_7) , LOW ) ;
+    }
+    else if ((average >= (AVERAGE_POT(1)) )&&(average < AVERAGE_POT(2)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -116,7 +125,7 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(1)) )&&(average < AVERAGE_POT(2)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(2)) )&&(average < AVERAGE_POT(3)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1) , HIGH ) ;
@@ -124,7 +133,7 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(2)) )&&(average < AVERAGE_POT(3)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(3)) )&&(average < AVERAGE_POT(4)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2) , HIGH ) ;
@@ -132,14 +141,14 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(3)) )&&(average < AVERAGE_POT(4)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(4)) )&&(average < AVERAGE_POT(5)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(4)) )&&(average < AVERAGE_POT(5)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(5)) )&&(average < AVERAGE_POT(6)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
@@ -147,7 +156,7 @@ void adcIntHandler (void){
         GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(5)) )&&(average < AVERAGE_POT(6)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(6)) )&&(average < AVERAGE_POT(7)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
@@ -155,14 +164,14 @@ void adcIntHandler (void){
         GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(6)) )&&(average < AVERAGE_POT(7)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(7)) )&&(average < AVERAGE_POT(8)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(7)) )&&(average < AVERAGE_POT(8)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
+    else if ((average >= (AVERAGE_POT(8)) )&&(average <= AVERAGE_POT_MAX) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8) // AVERAGE_POT(0) = 0
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
