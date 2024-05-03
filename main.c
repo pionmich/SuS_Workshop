@@ -12,7 +12,7 @@
 #define SAMPLERATE 44000
 #define AVERAGE_MAX VALUE_MAX / BUFFER_SIZE
 #define AVERAGE_POT_MAX (10^ (AVERAGE_MAX))  // maximaler Grenzwert der Skala
-#define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/9))   //Maximaler Grenzwert der Skala in Neunteln
+#define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/8))   //Maximaler Grenzwert der Skala in Neunteln
 
 // Funktionen-Deklarationen
 void adcIntHandler(void);
