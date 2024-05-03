@@ -90,7 +90,7 @@ void adcIntHandler (void){
 
     uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
     put (currentValue);
-    float average = 0.0;
+    uint32_t average = 0;
     for (i = 0; i <= BUFFER_SIZE; i++)
     {
 
@@ -98,7 +98,7 @@ void adcIntHandler (void){
         average = ((average + value)/ BUFFER_SIZE);
     }
 
-    if ((average >= (0) )&&(average < AVERAGE_POT(1)) )
+    if ((average > (0) )&&(average < AVERAGE_POT(1)) )
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
