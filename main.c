@@ -25,7 +25,7 @@ void setup(void);
 
 const uint8_t HIGH = 0xFF;    // LED an
 const uint8_t LOW = 0;        // LED aus
-const uint32_t ENERGY_MAX = 16777216; // 4095 squared = 16777216, 4095 weil adc hat 12 bits
+const uint32_t ENERGY_MAX = 16769025; // 4095 squared = 16769025, 4095 weil adc hat 12 bits
 
 // global variables
 int32_t bufferSample[FILTERORDER];
@@ -33,10 +33,11 @@ int32_t sampleIndex = 0;
 
 // hier nach Bedarf noch weitere globale Variablen einfuegen
 float energy = 0;
-float filteredValue = 0;
+float filteredValue = 0.0;
 float volume = 0;
 int n = 0;
 int i = 0;
+float control_Debug = 0;
 
 void main(void) // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
 {
@@ -100,14 +101,15 @@ void adcIntHandler(void){
            }
 
         else if (sampleIndex == 49){
-
+               filteredValue = 0.0;
                bufferSample[sampleIndex] = adcInputValue;
                for(i = 0; i < FILTERORDER; i++){
-                   filteredValue = filteredValue + bufferSample[FILTERORDER -1 - i] * B[i]; //Berechnung y[49] durch Faltung
+                   control_Debug = bufferSample[FILTERORDER -1 - i] * B[i];
+                   filteredValue = filteredValue + control_Debug; //Berechnung y[49] durch Faltung
                }
 
                energy = filteredValue * filteredValue; // y[49] quadrieren um Energie zu erhalten
-               volume = 10* log10(energy / ENERGY_MAX) + 90 ; //Lautst‰rkeberechnung mit Offset 90 um positive Zahlen zu erhalten => (90dB maximum)
+               volume = 10* log10(energy / ENERGY_MAX) + 90.0 ; //Lautst‰rkeberechnung mit Offset 90 um positive Zahlen zu erhalten => (90dB maximum)
 
                //Unterteilung in gleich groﬂe 10dB Intervalle
                if (volume <= 10  )
