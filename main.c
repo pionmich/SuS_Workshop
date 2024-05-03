@@ -25,7 +25,7 @@ void setup(void);
 
 const uint8_t HIGH = 0xFF;    // LED an
 const uint8_t LOW = 0;        // LED aus
-const uint32_t ENERGY_MAX = 16777216; // 4096 squared = 16777216, 4096 weil adc hat 12 bits
+const uint32_t ENERGY_MAX = 16777216; // 4095 squared = 16777216, 4095 weil adc hat 12 bits
 
 // global variables
 int32_t bufferSample[FILTERORDER];
@@ -35,6 +35,8 @@ int32_t sampleIndex = 0;
 float energy = 0;
 float filteredValue = 0;
 float volume = 0;
+int n = 0;
+int i = 0;
 
 void main(void) // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
 {
@@ -83,101 +85,105 @@ void setup(void){// konfiguriert den Mikrocontroller
 
 void adcIntHandler(void){
    // Bitte Code hier einfuegen
-    uint32_t adcInputValue;
+    uint32_t adcInputValue = 0;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
     //damit nur letzter Wert berechnet wird
-   if(sampleIndex <= 48){
 
-       bufferSample[sampleIndex] = adcInputValue;
-       sampleIndex++;
+    for (n = 0; n<51; n++){
 
-   }
+        if(sampleIndex <= 48){
 
-   else if (sampleIndex == 49){
+               bufferSample[sampleIndex] = adcInputValue;
+               sampleIndex++;
 
-       bufferSample[sampleIndex] = adcInputValue;
-       uint8_t i = 0 ;
-       for(i = 0; i < FILTERORDER; i++){
-           filteredValue += bufferSample[FILTERORDER -1 -i] * B[i]; //Berechnung y[49] durch Faltung
-       }
+           }
 
-       energy = filteredValue * filteredValue; // y[49] quadrieren um Energie zu erhalten
-       volume = 10* log10(energy / ENERGY_MAX) + 90 ; //Lautst‰rkeberechnung mit Offset 90 um positive Zahlen zu erhalten => (90dB maximum)
+        else if (sampleIndex == 49){
 
-       //Unterteilung in gleich groﬂe 10dB Intervalle
-       if (volume <= 10  )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+               bufferSample[sampleIndex] = adcInputValue;
+               for(i = 0; i < FILTERORDER; i++){
+                   filteredValue = filteredValue + bufferSample[FILTERORDER -1 - i] * B[i]; //Berechnung y[49] durch Faltung
+               }
+
+               energy = filteredValue * filteredValue; // y[49] quadrieren um Energie zu erhalten
+               volume = 10* log10(energy / ENERGY_MAX) + 90 ; //Lautst‰rkeberechnung mit Offset 90 um positive Zahlen zu erhalten => (90dB maximum)
+
+               //Unterteilung in gleich groﬂe 10dB Intervalle
+               if (volume <= 10  )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                                   GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 10 && volume <= 20 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, (
                            GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
                            GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                            GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 10 && volume <= 20 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, (
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 20 && volume <= 30 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 30 && volume <= 40 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume <= 50 && volume < 60 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 50 && volume <= 60 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 60 && volume <= 70 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_6 |
-                   GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 70 && volume <= 80 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
-       }
-       else if (volume > 80 && volume <= 90 )
-       {
-           GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                   GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                   GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                   GPIO_PIN_7) , HIGH ) ;
-       }
+               }
+               else if (volume > 20 && volume <= 30 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_2 | GPIO_PIN_3 |
+                           GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                           GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 30 && volume <= 40 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_3 |
+                           GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                           GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume <= 50 && volume < 60 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                           GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 50 && volume <= 60 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                           GPIO_PIN_4) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_5 | GPIO_PIN_6 |
+                           GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 60 && volume <= 70 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                           GPIO_PIN_4 | GPIO_PIN_5) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_6 |
+                           GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 70 && volume <= 80 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                           GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
+               }
+               else if (volume > 80 && volume <= 90 )
+               {
+                   GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+                           GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
+                           GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+                           GPIO_PIN_7) , HIGH ) ;
+               }
 
+               sampleIndex = 0;
+               n=0;
 
+        }
 
-       sampleIndex = 0;
 
 
    }
