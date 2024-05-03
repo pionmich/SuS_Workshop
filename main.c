@@ -98,14 +98,7 @@ void adcIntHandler (void){
         average = ((average + value)/ BUFFER_SIZE);
     }
 
-    if ((average > (0) )&&(average < AVERAGE_POT(1)) )
-    {
-        GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                GPIO_PIN_7) , LOW ) ;
-    }
-    else if ((average >= (AVERAGE_POT(1)) )&&(average < AVERAGE_POT(2)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    if ((average > 0 )&&(average < AVERAGE_POT(1)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -113,7 +106,7 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(2)) )&&(average < AVERAGE_POT(3)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(1)) )&&(average < AVERAGE_POT(2)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1) , HIGH ) ;
@@ -121,7 +114,7 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(3)) )&&(average < AVERAGE_POT(4)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(2)) )&&(average < AVERAGE_POT(3)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2) , HIGH ) ;
@@ -129,14 +122,14 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(4)) )&&(average < AVERAGE_POT(5)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(3)) )&&(average < AVERAGE_POT(4)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(5)) )&&(average < AVERAGE_POT(6)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(4)) )&&(average < AVERAGE_POT(5)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
@@ -144,7 +137,7 @@ void adcIntHandler (void){
         GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_5 | GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(6)) )&&(average < AVERAGE_POT(7)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(5)) )&&(average < AVERAGE_POT(6)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
@@ -152,14 +145,14 @@ void adcIntHandler (void){
         GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_6 |
                 GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(7)) )&&(average < AVERAGE_POT(8)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(6)) )&&(average < AVERAGE_POT(7)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(8)) )&&(average <= AVERAGE_POT_MAX) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/9)
+    else if ((average >= (AVERAGE_POT(7)) )&&(average <= AVERAGE_POT_MAX) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
