@@ -5,3 +5,8 @@ Debug/SuS_Workshop.map
 Debug/SuS_Workshop.out
 Debug/SuS_Workshop_linkInfo.xml
 /Debug/
+*.mk
+*.obj
+*.d
+*.launch
+*.d
