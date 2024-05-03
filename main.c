@@ -29,6 +29,8 @@ uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
+uint32_t n = 0;
+
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -86,12 +88,16 @@ uint32_t get ()   //Funktion holt den naechsten Wert aus dem Buffer
 
 void adcIntHandler (void){
     uint32_t adcInputValue;
-    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
+    for (n = 0; n <= BUFFER_SIZE; n++)
+        {
+            
+            ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
-    uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
-    put (currentValue);    //quadrierten Wert in den Buffer schreiben
+            uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
+            put (currentValue);    //quadrierten Wert in den Buffer schreiben
+        }
     uint32_t average = 0;
-    for (i = 0; i <= BUFFER_SIZE; i++)    //die letzten 10 Werte aus dem Buffer holen
+    for (i = 0; i <= BUFFER_SIZE; i++)    //die letzten 1000 Werte aus dem Buffer holen
     {
 
         uint32_t value = get();
