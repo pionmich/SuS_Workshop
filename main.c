@@ -8,7 +8,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/fpu.h"
 #include "driverlib/timer.h"
-#include "Filter.h"
+#include "lowpass2.h"
 
 
 // hier noch Ihren Filterheader einbinden
