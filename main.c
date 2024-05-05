@@ -88,15 +88,18 @@ void adcIntHandler (void){
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
-    uint32_t currentValue = adcInputValue * adcInputValue;    //aktuellen Wert auslesen und quadrieren
-    put (currentValue);    //quadrierten Wert in den Buffer schreiben
-    uint32_t average = 0;
-    for (i = 0; i <= BUFFER_SIZE; i++)    //die letzten 10 Werte aus dem Buffer holen
-    {
+    uint32_t currentValue = adcInputValue * adcInputValue / BUFFER_SIZE;    // Current value squared
+    put(currentValue);    // Write the squared value to the buffer
 
-        uint32_t value = get();
-        average = ((average + value)/ BUFFER_SIZE);
+    uint32_t sum = 0;
+    for (i = 0; i < BUFFER_SIZE; i++)
+    {
+        uint32_t value = get(); // Get the next value from the buffer
+        sum += value;
     }
+
+    uint32_t average = sum / BUFFER_SIZE; // Calculate the average
+
 
     if ((average > 0 )&&(average < AVERAGE_POT(1)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
