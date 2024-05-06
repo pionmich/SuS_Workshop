@@ -10,8 +10,7 @@
 // Praeprozessor-Makros
 #define BUFFER_SIZE 1000
 #define SAMPLERATE 44000
-#define AVERAGE_MAX VALUE_MAX / BUFFER_SIZE
-#define AVERAGE_POT_MAX (10^ (AVERAGE_MAX))  // maximaler Grenzwert der Skala
+#define AVERAGE_MAX VALUE_MAX - (OFFSET * OFFSET)
 #define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/8))   //Maximaler Grenzwert der Skala in Neunteln
 
 // Funktionen-Deklarationen
@@ -21,7 +20,9 @@ void setup(void);
 // Konstanten
 const uint8_t HIGH = 0xFF;    // LED an
 const uint8_t LOW = 0;        // LED aus
-const uint32_t VALUE_MAX = 16769025; // 4095 squared = 16769025, 4095 because adc has 12 bits
+const uint32_t OFFSET = 1400;
+//const uint32_t VALUE_MAX = 16769025; // 4095 squared = 16769025, 4095 because adc has 12 bits
+uint32_t VALUE_MAX = 6250000; // 4095 squared = 16769025, 4095 because adc has 12 bits
 
 // globale Variablen
 // hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
@@ -29,6 +30,7 @@ uint32_t ringBuffer[BUFFER_SIZE];    //array mit n=BUFFER_SIZE Elementen
 uint32_t writeIndex = 0;
 uint32_t readIndex = 0;
 uint32_t i = 0;
+uint32_t average = 0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen
     setup();
@@ -68,37 +70,20 @@ void setup(void){// konfiguriert den MiKrocontroller
 
 }
 
-void put (uint32_t item)  //Funktion setzt einen neuen Wert in den Buffer
-{
-
-    ringBuffer[writeIndex] = item;
-    writeIndex = (writeIndex + 1) % BUFFER_SIZE;
-
-}
-
-uint32_t get ()   //Funktion holt den naechsten Wert aus dem Buffer
-{
-
-    uint32_t item = ringBuffer[readIndex];
-    readIndex = (readIndex + 1) % BUFFER_SIZE;
-    return item;
-}
-
 void adcIntHandler (void){
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
-    uint32_t currentValue = adcInputValue * adcInputValue / BUFFER_SIZE;    // Current value squared
-    put(currentValue);    // Write the squared value to the buffer
+    // Digitalsierten Spannungswert fuer nachfolgende Berechnungen quadrieren
+    uint32_t adcInputValueSquared = ((adcInputValue - OFFSET) * (adcInputValue - OFFSET))/ BUFFER_SIZE;
 
-    uint32_t sum = 0;
-    for (i = 0; i < BUFFER_SIZE; i++)
-    {
-        uint32_t value = get(); // Get the next value from the buffer
-        sum += value;
-    }
+    // Signalenergie der letzten 1/44 Sekunde inkrementell berechnen
+    average = average + adcInputValueSquared - ringBuffer[readIndex];
 
-    uint32_t average = sum / BUFFER_SIZE; // Calculate the average
+    // Ringpuffer aktualisieren
+    readIndex = (readIndex + 1) % BUFFER_SIZE;
+    ringBuffer[writeIndex] = adcInputValueSquared;
+    writeIndex = (writeIndex + 1) % BUFFER_SIZE;
 
 
     if ((average > 0 )&&(average < AVERAGE_POT(1)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
@@ -155,7 +140,7 @@ void adcIntHandler (void){
                 GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
     }
-    else if ((average >= (AVERAGE_POT(7)) )&&(average <= AVERAGE_POT_MAX) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
+    else if ((average >= (AVERAGE_POT(7)) )&&(average <= AVERAGE_POT(8)) ) //AVERAGE_POT(x) = AVERAGE_POT_MAX * (x/8)
     {
         GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
                 GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
