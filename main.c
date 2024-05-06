@@ -10,7 +10,7 @@
 // Praeprozessor-Makros
 #define BUFFER_SIZE 1000
 #define SAMPLERATE 44000
-#define AVERAGE_MAX VALUE_MAX - (OFFSET * OFFSET)
+#define AVERAGE_MAX (VALUE_MAX - OFFSET) * (VALUE_MAX - OFFSET)
 #define AVERAGE_POT(threshold_value) (10^ ((threshold_value * AVERAGE_MAX)/8))   //Maximaler Grenzwert der Skala in Neunteln
 
 // Funktionen-Deklarationen
@@ -22,7 +22,7 @@ const uint8_t HIGH = 0xFF;    // LED an
 const uint8_t LOW = 0;        // LED aus
 const uint32_t OFFSET = 1400;
 //const uint32_t VALUE_MAX = 16769025; // 4095 squared = 16769025, 4095 because adc has 12 bits
-uint32_t VALUE_MAX = 6250000; // 4095 squared = 16769025, 4095 because adc has 12 bits
+uint32_t VALUE_MAX = 3000; // 4095 squared = 16769025, 4095 because adc has 12 bits
 
 // globale Variablen
 // hier die benötigten globalen Variablen, wie den Ringbuffer einfuegen
