@@ -21,7 +21,8 @@ void setup(void);
 // globale Variablen
 const float DoublePi = 6.283185308;
 int32_t bufferSample[440];
-// hier nach Bedarf noch weitere globale Variablen einfuegen
+uint16_t index = 0;
+const uint16_t DFT_SIZE = 440;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen 
     setup();
@@ -69,7 +70,15 @@ void setup(void){//konfiguriert den Mikrocontroller
 
 void adcIntHandler(void){
    // Bitte Code hier einfuegen
-   // ...
+
+    uint32_t adcInputValue;
+    ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
+
+    // Store the ADC value in the buffer
+    bufferSample[index] = adcInputValue;
+
+    // Increment the index, wrapping around if necessary
+    index = (index + 1) % 440;
    
    // am Ende von adcIntHandler, Interrupt-Flag loeschen
    ADCIntClear(ADC0_BASE,3);
