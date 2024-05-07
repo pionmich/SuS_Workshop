@@ -23,6 +23,9 @@ const float DoublePi = 6.283185308;
 int32_t bufferSample[440];
 uint16_t index = 0;
 const uint16_t DFT_SIZE = 440;
+uint16_t n = 0;
+float dftRe = 0.0;
+float dftIm = 0.0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen 
     setup();
@@ -76,6 +79,17 @@ void adcIntHandler(void){
 
     // Store the ADC value in the buffer
     bufferSample[index] = adcInputValue;
+
+    if (index == DFT_SIZE -1)
+    {
+
+        for (n = 0; n < DFT_SIZE; n++)
+        {
+            dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*index*n/DFT_SIZE);
+            dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*index*n/DFT_SIZE);
+
+        }
+    }
 
     // Increment the index, wrapping around if necessary
     index = (index + 1) % 440;
