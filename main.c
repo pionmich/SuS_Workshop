@@ -20,12 +20,14 @@ void setup(void);
 
 // globale Variablen
 const float DoublePi = 6.283185308;
-int32_t bufferSample[440];
-uint16_t index = 0;
 const uint16_t DFT_SIZE = 440;
+int32_t bufferSample[440];
+int32_t bufferDFT[440];
+uint16_t index = 0;
 uint16_t n = 0;
 float dftRe = 0.0;
 float dftIm = 0.0;
+float absDFT = 0.0;
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen 
     setup();
@@ -89,6 +91,8 @@ void adcIntHandler(void){
             dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*index*n/DFT_SIZE);
 
         }
+        absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);
+        bufferDFT[index] = absDFT;
     }
 
     // Increment the index, wrapping around if necessary
