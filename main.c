@@ -25,6 +25,7 @@ int32_t bufferSample[440];
 int32_t bufferDFT[440];
 uint16_t index = 0;
 uint16_t n = 0;
+uint16_t j = 0;
 float dftRe = 0.0;
 float dftIm = 0.0;
 float absDFT = 0.0;
@@ -84,15 +85,19 @@ void adcIntHandler(void){
 
     if (index == DFT_SIZE -1)
     {
-
-        for (n = 0; n < DFT_SIZE; n++)
+        for (j = 0; j< DFT_SIZE; j++)
         {
-            dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*index*n/DFT_SIZE);
-            dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*index*n/DFT_SIZE);
 
+            for (n = 0; n < DFT_SIZE; n++)
+            {
+                dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*j*n/DFT_SIZE);
+                dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);
+            }
+
+            absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);
+            bufferDFT[j] = absDFT;
         }
-        absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);
-        bufferDFT[index] = absDFT;
+
     }
 
     // Increment the index, wrapping around if necessary
