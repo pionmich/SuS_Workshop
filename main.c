@@ -32,8 +32,7 @@ float maxArray[440];
 uint16_t index = 0;
 uint16_t n = 0;
 uint16_t j = 0;
-float dftRe = 0.0;
-float dftIm = 0.0;
+
 float absDFT = 0.0;
 float maxDFT = 0.0;
 
@@ -97,7 +96,8 @@ float maxValue(float maxArray[])
 }
 void adcIntHandler(void){
     // Bitte Code hier einfuegen
-
+    float dftRe = 0.0;
+    float dftIm = 0.0;
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
@@ -119,6 +119,7 @@ void adcIntHandler(void){
             bufferDFT[j] = absDFT;
         }
         maxDFT = maxValue(bufferDFT);
+        maxDFT = maxDFT / DFT_SIZE;
 
 
         if ((maxDFT > 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
@@ -131,56 +132,59 @@ void adcIntHandler(void){
         }
         else if ((maxDFT >= (DFT_LIMIT(1)) )&&(maxDFT < DFT_LIMIT(2)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                    GPIO_PIN_1) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_2 | GPIO_PIN_3 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_1) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
+                    GPIO_PIN_0 | GPIO_PIN_2 | GPIO_PIN_3 |
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(2)) )&&(maxDFT < DFT_LIMIT(3)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                    GPIO_PIN_1 | GPIO_PIN_2) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_3 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_2) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
+                    GPIO_PIN_1 | GPIO_PIN_0 | GPIO_PIN_3 |
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(3)) )&&(maxDFT < DFT_LIMIT(4)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
-                    GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_3) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
+                    GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_0 |
+                    GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(4)) )&&(maxDFT < DFT_LIMIT(5)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
                     GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                    GPIO_PIN_4) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_5 | GPIO_PIN_6 |
+                    GPIO_PIN_0 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(5)) )&&(maxDFT < DFT_LIMIT(6)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_5) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
                     GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                    GPIO_PIN_4 | GPIO_PIN_5) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, ( GPIO_PIN_6 |
+                    GPIO_PIN_4 | GPIO_PIN_0 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(6)) )&&(maxDFT < DFT_LIMIT(7)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_6) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
                     GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
-                    GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6) , HIGH ) ;
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , LOW ) ;
+                    GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_0 |
+                    GPIO_PIN_7) , LOW ) ;
         }
         else if ((maxDFT >= (DFT_LIMIT(7)) )&&(maxDFT <= DFT_LIMIT(8)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
-            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0 |
+            GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , HIGH ) ;
+            GPIOPinWrite (GPIO_PORTB_BASE, (
                     GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 |
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-                    GPIO_PIN_7) , HIGH ) ;
+                    GPIO_PIN_0) , LOW ) ;
         }
         maxDFT = 0;
     }
