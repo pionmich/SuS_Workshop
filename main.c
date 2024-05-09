@@ -30,11 +30,9 @@ int32_t bufferSample[440];
 float bufferDFT[440];
 float maxArray[440];
 uint16_t index = 0;
-uint16_t n = 0;
-uint16_t j = 0;
 
-float absDFT = 0.0;
-float maxDFT = 0.0;
+
+
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen 
     setup();
@@ -95,13 +93,17 @@ float maxValue(float maxArray[])
     return max;
 }
 void adcIntHandler(void){
-    // Bitte Code hier einfuegen
+    // Variablen initialisieren
     float dftRe = 0.0;
     float dftIm = 0.0;
+    uint16_t n = 0;
+    uint16_t j = 0;
+    float absDFT = 0.0;
+    float maxDFT = 0.0;
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
-    // Store the ADC value in the buffer
+    // ADC Werte im Buffer speichern
     bufferSample[index] = adcInputValue;
 
     if (index == DFT_SIZE -1)
@@ -186,10 +188,9 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_0) , LOW ) ;
         }
-        maxDFT = 0;
     }
 
-    // Increment the index, wrapping around if necessary
+    // Index erhoehen, wenn voll auf 0 zurücksetzen
     index = (index + 1) % 440;
 
     // am Ende von adcIntHandler, Interrupt-Flag loeschen
