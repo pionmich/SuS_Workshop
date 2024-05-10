@@ -77,7 +77,7 @@ void setup(void){//konfiguriert den Mikrocontroller
     ADCIntEnable(ADC0_BASE,3);
 
 }
-
+// todo: HIER MUSS DER INDEX DES HOECHSTEN WERTES AUSGEGEBEN WERDEN
 float maxValue(float maxArray[])
 {
     uint16_t k=0;
@@ -123,8 +123,7 @@ void adcIntHandler(void){
             bufferDFT[j] = absDFT;
         }
 
-        maxDFT = maxValue(bufferDFT);
-        maxDFT = maxDFT / DFT_SIZE;
+        maxDFT = maxValue(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
 
 
         if ((maxDFT >= 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
