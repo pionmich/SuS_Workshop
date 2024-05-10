@@ -100,6 +100,7 @@ void adcIntHandler(void){
     uint16_t j = 0;
     float absDFT = 0.0;
     float maxDFT = 0.0;
+
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
 
@@ -116,15 +117,17 @@ void adcIntHandler(void){
                 dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*j*n/DFT_SIZE);
                 dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);
             }
-
+            dftRe = dftRe / 440;
+            dftIm = dftIm / 440;
             absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);
             bufferDFT[j] = absDFT;
         }
+
         maxDFT = maxValue(bufferDFT);
         maxDFT = maxDFT / DFT_SIZE;
 
 
-        if ((maxDFT > 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        if ((maxDFT >= 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
