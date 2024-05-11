@@ -12,7 +12,7 @@
 
 // Praepozessor-Makros
 #define SAMPLERATE 44000
-#define DFT_LIMIT(threshold_value) ((threshold_value * DFT_MAX)/8)   //Maximaler Grenzwert der Skala in Achteln. -> Exponentielle Skala
+#define DFT_LIMIT(threshold_value) ((threshold_value * DFT_MAX)/8)   //Maximaler Grenzwert der Skala in Achteln
 
 //Funktionen-Deklarationen
 void adcIntHandler(void);
@@ -72,7 +72,7 @@ void setup(void){//konfiguriert den Mikrocontroller
     ADCIntRegister(ADC0_BASE,3,adcIntHandler);
     ADCIntEnable(ADC0_BASE,3);
 }
-// Funktion zum Bestimmen des Index des höchsten Wertes
+// Funktion zum Bestimmen des Index des hÃ¶chsten Wertes
 int maxValueIndex(float maxArray[])
 {
     uint16_t k = 0; //initialisieren
@@ -82,7 +82,7 @@ int maxValueIndex(float maxArray[])
     for (k = 2; k < DFT_SIZE; k++) {
         if (maxArray[k] > max) {
             max = maxArray[k];
-            maxIndex = k; // wenn ein neuer Höchstwert gefunden ist maxIndex updaten
+            maxIndex = k; // wenn ein neuer HÃ¶chstwert gefunden ist maxIndex updaten
         }
     }
     return maxIndex;
@@ -113,14 +113,14 @@ void adcIntHandler(void)
             for (n = 0; n < DFT_SIZE; n++)
             {
                 dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*j*n/DFT_SIZE);    // Realteil
-                dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);    // Imaginärteil
+                dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);    // ImaginÃ¤rteil
             }
             dftRe = dftRe / 440;    // Durch die Anzahl der Werte Teilen
             dftIm = dftIm / 440;    // Durch die Anzahl der Werte Teilen
             absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);  // Betrag berechnen
             bufferDFT[j] = absDFT;  // Betrag an der Stelle j im Array speichern
         }
-        maxFreq = maxValueIndex(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
+        maxFreq = maxValueIndex(bufferDFT) *100;  //mal 100, da frequenzauflÃ¶sung von 100
 
         // LEDs Ansteuern
         if ((maxFreq > 0 )&&(maxFreq < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
@@ -189,7 +189,7 @@ void adcIntHandler(void)
         }
     }
 
-    // Index erhoehen, wenn voll auf 0 zurücksetzen
+    // Index erhoehen, wenn voll auf 0 zurÃ¼cksetzen
     index = (index + 1) % 440;
 
     // am Ende von adcIntHandler, Interrupt-Flag loeschen
