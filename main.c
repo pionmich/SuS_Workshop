@@ -22,17 +22,13 @@ int maxValueIndex(float maxArray[]);
 
 // globale Variablen
 const float DoublePi = 6.283185308;
-const uint16_t DFT_SIZE = 440;
-const uint16_t DFT_MAX = 4000;
+const uint16_t DFT_SIZE = 440;  // DFT soll mit N=440 Abtastwerten arbeiten
+const uint16_t DFT_MAX = 4000;  // Maximum der Skala soll laut Aufgabenstellung 4kHz sein
 const uint8_t HIGH = 0xFF;    // LED an
 const uint8_t LOW = 0;        // LED aus
-int32_t bufferSample[440];
-float bufferDFT[440];
-float maxArray[440];
+int32_t bufferSample[440];  // Buffer der ADC Werte
+float bufferDFT[440];   // Buffer der Werte aus der DFT
 uint16_t index = 0;
-
-
-
 
 void main(void){ // nicht veraendern!! Bitte Code in adcIntHandler einfuegen 
     setup();
@@ -75,35 +71,33 @@ void setup(void){//konfiguriert den Mikrocontroller
     ADCIntClear(ADC0_BASE,3);
     ADCIntRegister(ADC0_BASE,3,adcIntHandler);
     ADCIntEnable(ADC0_BASE,3);
-
 }
-// todo: HIER MUSS DER INDEX DES HOECHSTEN WERTES AUSGEGEBEN WERDEN
+// Funktion zum Bestimmen des Index des höchsten Wertes
 int maxValueIndex(float maxArray[])
 {
-    uint16_t k = 0;
-    float max = maxArray[0]; // Start with the first element
-    uint16_t max_index = 0; // Initialize max_index to track the index of the maximum value
+    uint16_t k = 0; //initialisieren
+    float max = maxArray[1]; // Beim zweiten Element starten
+    uint16_t maxIndex = 0; // maxIndex initialisieren
 
-    for (k = 1; k < DFT_SIZE; k++) {
+    for (k = 2; k < DFT_SIZE; k++) {
         if (maxArray[k] > max) {
             max = maxArray[k];
-            max_index = k; // Update max_index whenever a new maximum is found
+            maxIndex = k; // wenn ein neuer Höchstwert gefunden ist maxIndex updaten
         }
     }
-    return max_index;
+    return maxIndex;
 }
 
-
-
-
-void adcIntHandler(void){
+void adcIntHandler(void)
+{
     // Variablen initialisieren
     float dftRe = 0.0;
     float dftIm = 0.0;
     uint16_t n = 0;
     uint16_t j = 0;
     float absDFT = 0.0;
-    float maxDFT = 0.0;
+    uint32_t maxFreq = 0;
+
 
     uint32_t adcInputValue;
     ADCSequenceDataGet(ADC0_BASE,3,&adcInputValue);
@@ -111,26 +105,25 @@ void adcIntHandler(void){
     // ADC Werte im Buffer speichern
     bufferSample[index] = adcInputValue;
 
+    // DFT berechnen
     if (index == DFT_SIZE -1)
     {
         for (j = 0; j< DFT_SIZE; j++)
         {
-
             for (n = 0; n < DFT_SIZE; n++)
             {
-                dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*j*n/DFT_SIZE);
-                dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);
+                dftRe = dftRe + bufferSample[n] * cosf(- DoublePi*j*n/DFT_SIZE);    // Realteil
+                dftIm = dftIm + bufferSample[n] * sinf(- DoublePi*j*n/DFT_SIZE);    // Imaginärteil
             }
-            dftRe = dftRe / 440;
-            dftIm = dftIm / 440;
-            absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);
-            bufferDFT[j] = absDFT;
+            dftRe = dftRe / 440;    // Durch die Anzahl der Werte Teilen
+            dftIm = dftIm / 440;    // Durch die Anzahl der Werte Teilen
+            absDFT = sqrtf(dftRe * dftRe + dftIm * dftIm);  // Betrag berechnen
+            bufferDFT[j] = absDFT;  // Betrag an der Stelle j im Array speichern
         }
+        maxFreq = maxValueIndex(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
 
-        maxDFT = maxValueIndex(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
-
-
-        if ((maxDFT >= 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        // LEDs Ansteuern
+        if ((maxFreq > 0 )&&(maxFreq < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_0) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -138,7 +131,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(1)) )&&(maxDFT < DFT_LIMIT(2)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(1)) )&&(maxFreq < DFT_LIMIT(2)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_1) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -146,7 +139,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(2)) )&&(maxDFT < DFT_LIMIT(3)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(2)) )&&(maxFreq < DFT_LIMIT(3)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_2) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -154,7 +147,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(3)) )&&(maxDFT < DFT_LIMIT(4)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(3)) )&&(maxFreq < DFT_LIMIT(4)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_3) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -162,7 +155,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(4)) )&&(maxDFT < DFT_LIMIT(5)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(4)) )&&(maxFreq < DFT_LIMIT(5)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_4) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -170,7 +163,7 @@ void adcIntHandler(void){
                     GPIO_PIN_0 | GPIO_PIN_5 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(5)) )&&(maxDFT < DFT_LIMIT(6)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(5)) )&&(maxFreq < DFT_LIMIT(6)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_5) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -178,7 +171,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_0 | GPIO_PIN_6 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(6)) )&&(maxDFT < DFT_LIMIT(7)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(6)) )&&(maxFreq < DFT_LIMIT(7)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_6) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
@@ -186,7 +179,7 @@ void adcIntHandler(void){
                     GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_0 |
                     GPIO_PIN_7) , LOW ) ;
         }
-        else if ((maxDFT >= (DFT_LIMIT(7)) )&&(maxDFT <= DFT_LIMIT(8)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
+        else if ((maxFreq >= (DFT_LIMIT(7)) )&&(maxFreq <= DFT_LIMIT(8)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
         {
             GPIOPinWrite (GPIO_PORTB_BASE, (GPIO_PIN_7) , HIGH ) ;
             GPIOPinWrite (GPIO_PORTB_BASE, (
