@@ -18,7 +18,7 @@
 void adcIntHandler(void);
 void setup(void);
 // hier nach Bedarf noch weitere Funktionsdeklarationen einfuegen
-float maxValue(float maxArray[]);
+int maxValueIndex(float maxArray[]);
 
 // globale Variablen
 const float DoublePi = 6.283185308;
@@ -78,20 +78,24 @@ void setup(void){//konfiguriert den Mikrocontroller
 
 }
 // todo: HIER MUSS DER INDEX DES HOECHSTEN WERTES AUSGEGEBEN WERDEN
-float maxValue(float maxArray[])
+int maxValueIndex(float maxArray[])
 {
-    uint16_t k=0;
-    float max= 0.0;
-    max = maxArray[0];
-    for(k=1 ; k<DFT_SIZE; k++)
-    {
-        if(maxArray[k]>max)
-        {
+    uint16_t k = 0;
+    float max = maxArray[0]; // Start with the first element
+    uint16_t max_index = 0; // Initialize max_index to track the index of the maximum value
+
+    for (k = 1; k < DFT_SIZE; k++) {
+        if (maxArray[k] > max) {
             max = maxArray[k];
+            max_index = k; // Update max_index whenever a new maximum is found
         }
     }
-    return max;
+    return max_index;
 }
+
+
+
+
 void adcIntHandler(void){
     // Variablen initialisieren
     float dftRe = 0.0;
@@ -123,7 +127,7 @@ void adcIntHandler(void){
             bufferDFT[j] = absDFT;
         }
 
-        maxDFT = maxValue(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
+        maxDFT = maxValueIndex(bufferDFT) *100;  //mal 100, da frequenzauflösung von 100
 
 
         if ((maxDFT >= 0 )&&(maxDFT < DFT_LIMIT(1)) ) //DFT_LIMIT(x) = DFT_MAX * (x/8)
